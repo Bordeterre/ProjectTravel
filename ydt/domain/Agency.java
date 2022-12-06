@@ -34,7 +34,31 @@ public class Agency{
                 return client;
             }
         }
+        return null;
+    }
 
+    public Flight search_flight(String date, String departure, String destination){
+        Iterator<Flight> it = this.flights.iterator();
+        while(it.hasNext()){
+            Flight flight = it.next();
+            if((date == null || date.equals(flight.get_date()))
+                && (departure == null || departure.equals(flight.get_departure()))
+                && (destination == null || destination.equals(flight.get_destination()))
+            ){
+                return flight;
+            }
+        }
+        return null;
+    }
+
+    public Rental search_rental(Set<Rental> rental_set, String name){
+        Iterator<Rental> it = rental_set.iterator();
+        while(it.hasNext()){
+            Rental rental = it.next();
+            if(rental.get_name().equals(name)){
+                return rental;
+            }
+        }
         return null;
     }
 
@@ -55,12 +79,29 @@ public class Agency{
         return this.cars.add(new Rental(name, price));
     }
 
-    public boolean create_travel_project(String name){
+    public Travel_project create_travel_project(String name){
         Client client = this.get_client_by_name(name);
-        if(client == null){ return false;}
+        if(client == null){ return null;}
 
-        this.travel_projects.add(new Travel_project(client, new ID()));  
-        return true;
+        Travel_project travel_project = new Travel_project(client, new ID());
+        this.travel_projects.add(travel_project);  
+        return travel_project;
+    }
+
+    public void add_flight_ticket(Travel_project travel_project, Flight flight, boolean is_discounted, boolean is_first_class){
+        Flight_ticket flight_ticket = new Flight_ticket(flight, is_discounted, is_first_class);
+        travel_project.add_flight_ticket(flight_ticket);
+    }
+
+    public Prestation add_prestation(Travel_project travel_project, String hotel_name, String car_name, boolean has_luxurious_prestation){
+        Rental hotel = this.search_rental(this.hotels, hotel_name);
+        if(hotel == null){return null;}
+        Rental car = this.search_rental(this.cars, car_name);
+        if(car == null){return null;}
+        Prestation prestation = new Prestation(car, hotel, has_luxurious_prestation);
+
+        travel_project.add_prestation(prestation);
+        return prestation;
     }
 
 }

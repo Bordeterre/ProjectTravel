@@ -1,4 +1,5 @@
-To do : 
- - Agence(repository)
- - repository / infrastructure
- - couche utilisateur / application
+
+
+Rapport :
+
+Indiquer qu'on gère pas combien de ticket ou quoi pour vol, faudrait faire une entity qui enrobe le value object, mais pas le temps
