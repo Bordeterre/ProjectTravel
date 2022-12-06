@@ -1,20 +1,15 @@
 package ydt.domain;
 
+// Value Object
 public class Client{
-    private ID id;
     private String name;
 
-    public Client(String name, ID id){
+    public Client(String name){
         this.name = name;
-        this.id = id;
     }
 
     public String get_name(){
         return this.name;
-    }
-
-    public ID get_id(){
-        return this.id;
     }
 
     @Override
@@ -22,7 +17,10 @@ public class Client{
         if (!(o instanceof Client)) {
             return false;
         }
-        Client p = (Client) o;
-        return get_id().equals(p.get_id());
-    }  
+        Client c = (Client) o;
+        if(this.get_name().equals(c.get_name())){
+            return true;
+        }
+        return false;
+    }      
 }

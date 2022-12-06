@@ -7,15 +7,15 @@ public class Agency{
     private ID id;
     private ArrayList<Travel_project> travel_projects;
     private ArrayList<Client> clients;
-    private ArrayList<Hotel> hotels;
-    private ArrayList<Car> cars;
+    private ArrayList<Rental> hotels;
+    private ArrayList<Rental> cars;
     private ArrayList<Flight> flights;
 
     public Agency(){
         this.id = new ID();
         this.clients = new ArrayList<Client>();
-        this.hotels = new ArrayList<Hotel>();
-        this.cars = new ArrayList<Car>();
+        this.hotels = new ArrayList<Rental>();
+        this.cars = new ArrayList<Rental>();
         this.flights = new ArrayList<Flight>();
         this.travel_projects = new ArrayList<Travel_project>();
     }
@@ -26,11 +26,11 @@ public class Agency{
     }
 
     public void create_hotel(String name, int price){
-        this.hotels.add(new Hotel(name, price, new ID()));
+        this.hotels.add(new Rental(name, price, new ID()));
     }
 
     public void create_car(String name, int price){
-        this.cars.add(new Car(name, price, new ID()));
+        this.cars.add(new Rental(name, price, new ID()));
     }
 
     public void create_flight(String date, String departure, String destination, int price){
