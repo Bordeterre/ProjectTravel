@@ -2,6 +2,7 @@ package ydt.application;
 
 import ydt.domain.*;
 
+import java.util.*;
 
 public class Application {
     public static void help(){
@@ -11,14 +12,9 @@ public class Application {
         System.out.println("3 : entrer un hotel dans le système");
         System.out.println("4 : entrer une voiture dans le système");
         System.out.println("5 : créer un projet de voyage");
-        System.out.println("6 : chercher un projet de voyage");
-        System.out.println("7 : modifier un projet de voyage");
-        System.out.println("8 : afficher les clients");
-        System.out.println("9 : afficher les vols");
-        System.out.println("10 : afficher les hotels");
-        System.out.println("11 : afficher les voitures");
-        System.out.println("12 : sauvegarder l'agence");
-        System.out.println("13 : charger l'agence");
+        System.out.println("6 : afficher un projet de voyage");
+        System.out.println("7 : changer les vols d'un projet de voyage");
+        System.out.println("6 : changer les services d'un projet de voyage");
     }
 
     // 1
@@ -135,7 +131,7 @@ public class Application {
         System.out.print("-> ");
         String hotel_name = IO.saisieChaine();
 
-        System.out.println("Si vous désirez un service de luxe, tapez 1");
+        System.out.println("Si vous désirez un service de luxe à l'hotel, tapez 1");
         System.out.print("-> ");
         String luxurious = IO.saisieChaine();
 
@@ -143,7 +139,7 @@ public class Application {
         System.out.print("-> ");
         String car_name = IO.saisieChaine();
 
-        Prestation prestation = agency.add_prestation(travel_project, hotel_name, car_name, luxurious=="1");
+        Prestation prestation = agency.add_prestation(travel_project, hotel_name, car_name, luxurious.equals("1"));
         if(prestation == null){
             System.out.println("L'hotel et/ou la voiture n'existent pas, veuillez recommencer");
             return false;
@@ -162,7 +158,7 @@ public class Application {
         }
 
         System.out.println("- Combien de vols voulez vous commander ?");
-        int nb_flights = Math.max(1, IO.saisieEntier());
+        int nb_flights = IO.saisieEntier();
         for(int i = 0; i < nb_flights; i++){
             if(!create_flight_ticket(agency, travel_project)){
                 return;
@@ -176,10 +172,98 @@ public class Application {
                 return;
             }
         }
-
+        System.out.println("L'ID de votre projet de voyage est : "+travel_project.get_id().get_id()+" . Veuillez le retenir");
         System.out.println("Ce voyage coutera : "+Double.toString(travel_project.get_price()));
     }
 
+    // 6
+    public static Travel_project search_travel_project(Agency agency){
+        System.out.println("Quel est l'id de votre projet de voyage ?");
+        System.out.print("-> ");
+        String id = IO.saisieChaine();
+        return agency.get_travel_project_by_id(id);
+    }
+
+    public static void display_travel_project(Agency agency){
+        Travel_project travel_project = search_travel_project(agency);
+        if(travel_project == null){
+            System.out.println("Ce projet de voyage n'existe pas");
+            return;
+        }
+
+        System.out.println("ID : " + travel_project.get_id().get_id());
+        System.out.println("Client : " + travel_project.get_client().get_name());
+        System.out.println("Vols : ");
+        Iterator<Flight_ticket> itf =  travel_project.get_flight_tickets().iterator();
+        while(itf.hasNext()){
+            Flight_ticket flight_ticket = itf.next();
+            Flight flight = flight_ticket.get_flight();
+            System.out.print(" - Ticket ");
+            if(flight_ticket.get_is_first_class()){
+                System.out.print("première classe ");
+            }
+            if(flight_ticket.get_is_discounted()){
+                System.out.print("réduit ");
+            }
+            System.out.println(". " + flight.get_departure() + "=>" + flight.get_destination() + ". ("+ flight.get_date() + ", " + flight_ticket.get_price() + "€‎)");
+        }
+
+        Iterator<Prestation> itp =  travel_project.get_prestations().iterator();
+        while(itp.hasNext()){
+            Prestation prestation = itp.next();
+            System.out.print(" - Hotel : "+ prestation.get_hotel().get_name());
+            if(prestation.get_has_luxurious_prestation()){
+                System.out.print(" (luxurious)");
+            }
+            System.out.print(". Car : "+prestation.get_car().get_name());
+            System.out.print(". (" + prestation.get_price() + "€‎)");
+        }
+    }
+
+    //7
+    public static void change_flight_ticket(Agency agency){
+        Travel_project travel_project = search_travel_project(agency);
+        if(travel_project == null){
+            System.out.println("Ce projet de voyage n'existe pas");
+            return;
+        }
+
+        System.out.println("Pour supprimer les tickets de vols existants, tapez 1");
+        System.out.print("-> ");
+        String supprimer = IO.saisieChaine();
+        if(supprimer.equals("1")){agency.remove_all_flight_tickets(travel_project);}
+
+        System.out.println("- Combien de vols voulez vous créer ?");
+        int nb_flights = IO.saisieEntier();
+        for(int i = 0; i < nb_flights; i++){
+            if(!create_flight_ticket(agency, travel_project)){
+                return;
+            }
+        }
+    }
+
+    //8
+    public static void change_prestation(Agency agency){
+        Travel_project travel_project = search_travel_project(agency);
+        if(travel_project == null){
+            System.out.println("Ce projet de voyage n'existe pas");
+            return;
+        }
+
+        System.out.println("Pour supprimer les prestations existantes, tapez 1");
+        System.out.print("-> ");
+        String supprimer = IO.saisieChaine();
+        if(supprimer.equals("1")){agency.remove_all_prestations(travel_project);}
+
+        System.out.println("- Combien de prestations voulez vous ajouter ?");
+        System.out.print("-> ");
+        int nb_services = IO.saisieEntier();
+        for(int i = 0; i < nb_services; i++){
+            if(!create_prestation(agency, travel_project)){
+                return;
+            }
+        }
+    }
 
     public static void main(String args[]){
         help();
@@ -195,6 +279,9 @@ public class Application {
                 case "3" : enter_hotel(agency); break;
                 case "4" : enter_car(agency); break;
                 case "5" : create_travel_project(agency); break;
+                case "6" : display_travel_project(agency); break;
+                case "7" : change_flight_ticket(agency); break;
+                case "8" : change_prestation(agency); break;
 
                 default : help();
             }

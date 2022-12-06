@@ -34,6 +34,16 @@ public class Travel_project{
         flight_tickets.remove(flight_ticket);
     }
 
+    public void remove_all_prestations(){
+        prestations = new ArrayList<Prestation>();
+    }
+
+    public void remove_all_flight_tickets(){
+        flight_tickets = new ArrayList<Flight_ticket>();
+    }
+
+
+
     // Getters
     public double get_price(){
         double price = 0;
@@ -49,6 +59,11 @@ public class Travel_project{
 
         return price;
     }
+
+    public Client get_client(){
+        return client;
+    }
+
 
     public ArrayList<Prestation> get_prestations(){
         return prestations;

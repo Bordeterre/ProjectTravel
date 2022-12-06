@@ -22,9 +22,6 @@ public class Agency{
         this.travel_projects = new HashSet<Travel_project>();
     }
 
-
-    // Get
-
     // Search
     public Client get_client_by_name(String name){
         Iterator<Client> it = this.clients.iterator();
@@ -57,6 +54,17 @@ public class Agency{
             Rental rental = it.next();
             if(rental.get_name().equals(name)){
                 return rental;
+            }
+        }
+        return null;
+    }
+
+    public Travel_project get_travel_project_by_id(String id){
+        Iterator<Travel_project> it = this.travel_projects.iterator();
+        while(it.hasNext()){
+            Travel_project travel_project = it.next();
+            if(id.equals(travel_project.get_id().get_id())){
+                return travel_project;
             }
         }
         return null;
@@ -102,6 +110,14 @@ public class Agency{
 
         travel_project.add_prestation(prestation);
         return prestation;
+    }
+
+    public void remove_all_flight_tickets(Travel_project travel_project){
+        travel_project.remove_all_flight_tickets();
+    }
+
+    public void remove_all_prestations(Travel_project travel_project){
+        travel_project.remove_all_prestations();
     }
 
 }
