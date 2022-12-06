@@ -22,5 +22,10 @@ public class Client{
             return true;
         }
         return false;
-    }      
+    }
+
+    public int hashCode() {
+        return get_name().hashCode();
+    }
+
 }

@@ -69,7 +69,14 @@ public class Travel_project{
         }
         Travel_project p = (Travel_project) o;
         return get_id().equals(p.get_id());
-    }  
+    }
+
+    public int hashCode() {
+        return get_id().hashCode();
+    }
+
+
+
 
 
 }

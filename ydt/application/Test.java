@@ -5,9 +5,10 @@ import ydt.domain.*;
 
 public class Test {
     public static void main(String args[]){
+        /*
         Agency agency = new Agency();
 
-
+        
         // ajout 1 vol
         agency.create_flight("demain", "ici", "la bas", 500);
         // ajout hôtel
@@ -28,6 +29,7 @@ public class Test {
         
         //ajouter une prestation au voyage
 
+        */
         
 
     }

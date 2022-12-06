@@ -44,6 +44,10 @@ public class Flight{
             return true;
         }
         return false;
-    }  
+    } 
+
+    public int hashCode() {
+        return (get_date() + get_departure() + get_destination() + Integer.toString(get_price())).hashCode();
+    }
 
 }

@@ -45,8 +45,8 @@ public class Flight_ticket{
         }
         Flight_ticket f = (Flight_ticket) o;
         if(this.get_flight().equals(f.get_flight()) 
-            && this.get_is_discounted() == .f.get_is_discounted()
-            && this.get_is_first_class() == .f.get_is_first_class()
+            && this.get_is_discounted() == f.get_is_discounted()
+            && this.get_is_first_class() == f.get_is_first_class()
         ){
             return true;
         }

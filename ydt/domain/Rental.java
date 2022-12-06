@@ -28,5 +28,11 @@ public class Rental{
             return true;
         }
         return false;
-    }      
+    }
+
+    public int hashCode() {
+        return (get_name() + Integer.toString(get_price())).hashCode();
+    }
+
+
 }
