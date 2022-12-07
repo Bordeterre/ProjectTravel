@@ -1,94 +1,61 @@
 package ydt.application;
 
 import ydt.domain.*;
+import ydt.infrastructure.*;
 
 import java.util.*;
 
 public class Application {
     public static void help(){
         System.out.println("0 : exit");
-        System.out.println("1 : entrer un client dans le système");
-        System.out.println("2 : entrer un vol dans le système");
-        System.out.println("3 : entrer un hotel dans le système");
-        System.out.println("4 : entrer une voiture dans le système");
+        System.out.println("1 : afficher la liste des clients");
+        System.out.println("2 : afficher  la liste des vols");
+        System.out.println("3 : afficher  la liste des hotels");
+        System.out.println("4 : afficher  la liste des voitures");
         System.out.println("5 : créer un projet de voyage");
         System.out.println("6 : afficher un projet de voyage");
         System.out.println("7 : changer les vols d'un projet de voyage");
-        System.out.println("6 : changer les services d'un projet de voyage");
+        System.out.println("8 : changer les services d'un projet de voyage");
+        System.out.println();
+        System.out.println("10 : créer une nouvelle agence");
+        System.out.println("11 : sauvegarder l'agence en mémoire");
+        System.out.println("12 : charger une agence de la mémoire");
+
     }
 
     // 1
-    public static void enter_client(Agency agency){
-        System.out.println("- Quel est le nom de ce client ?");
-        System.out.print("-> ");
-        String name = IO.saisieChaine();
-
-        if(agency.enter_client(name)){
-            System.out.println("- " + name + " créé avec succès");
-        } else {
-            System.out.println("- " + name + " existe déja");
+    public static void show_clients(Agency agency){
+        Iterator<Client> itc = agency.get_clients().iterator();
+        while(itc.hasNext()){
+            System.out.println(" - "+itc.next().get_name());
         }
+
     }
 
     // 2
-    public static void enter_flight(Agency agency){
-        System.out.println("- Quelle est la date du vol ?");
-        System.out.print("-> ");
-        String date = IO.saisieChaine();
-
-        System.out.println("- Quel est le lieu de départ du vol ?");
-        System.out.print("-> ");
-        String departure = IO.saisieChaine();
-
-        System.out.println("- Quelle est la destination du vol ?");
-        System.out.print("-> ");
-        String destination = IO.saisieChaine();
-
-        System.out.println("- Quelle est le prix du vol (en euros) ?");
-        System.out.print("-> ");
-        int price = IO.saisieEntier();
-
-
-        if(agency.enter_flight(date, departure, destination, price)){
-            System.out.println("- Le vol a été créé avec succès");
-        } else {
-            System.out.println("- Le vol existe déja");
+    public static void show_flights(Agency agency){
+        Iterator<Flight> itf = agency.get_flights().iterator();
+        while(itf.hasNext()){
+            Flight flight = itf.next();
+            System.out.println(" - " + flight.get_departure() + "=>" + flight.get_destination() + " ("+ flight.get_date() + ", " + flight.get_price() + "€‎)");
         }
     }
 
     // 3
-    public static void enter_hotel(Agency agency){
-        System.out.println("- Quel est le nom de l'hotel ?");
-        System.out.print("-> ");
-        String name = IO.saisieChaine();
-
-        System.out.println("- Quelle est le prix de l'hotel (en euros) ?");
-        System.out.print("-> ");
-        int price = IO.saisieEntier();
-
-
-        if(agency.enter_hotel(name, price)){
-            System.out.println("- " + name + " créé avec succès");
-        } else {
-            System.out.println("- " + name + " existe déja");
+    public static void show_hotels(Agency agency){
+        Iterator<Rental> ith = agency.get_hotels().iterator();
+        while(ith.hasNext()){
+            Rental hotel = ith.next();
+            System.out.println(" - " + hotel.get_name() + ". (" + hotel.get_price() + "€‎)");
         }
     }
 
     // 4
-    public static void enter_car(Agency agency){
-        System.out.println("- Quel est le nom de la voiture ?");
-        System.out.print("-> ");
-        String name = IO.saisieChaine();
-
-        System.out.println("- Quelle est le prix de la voiture (en euros) ?");
-        System.out.print("-> ");
-        int price = IO.saisieEntier();
-
-
-        if(agency.enter_car(name, price)){
-            System.out.println("- " + name + " créé avec succès");
-        } else {
-            System.out.println("- " + name + " existe déja");
+    public static void show_cars(Agency agency){
+        Iterator<Rental> ith = agency.get_cars().iterator();
+        while(ith.hasNext()){
+            Rental car = ith.next();
+            System.out.println(" - " + car.get_name() + ". (" + car.get_price() + "€‎)");
         }
     }
 
@@ -265,24 +232,59 @@ public class Application {
         }
     }
 
+    //10
+    public static Agency create_agency(Agency_repository memory){
+        Agency agency = memory.create_agency();
+        Data_fetcher.fetch_data(agency);
+        System.out.println("L'id de la nouvelle agence est : " + agency.get_id().get_id());
+        return agency;
+    }
+
+    //11
+    public static void save_agency(Agency_repository memory, Agency agency){
+        memory.save(agency);
+         System.out.println("L'id de l'agence sauvegardée est : " + agency.get_id().get_id());
+    }
+
+    //12
+    public static Agency load_agency(Agency_repository memory, Agency previous_agency){
+        System.out.println("Quel est l'id de l'agence que vous voulez charger ?");
+        System.out.print("-> ");
+        String id = IO.saisieChaine();
+        Agency agency = memory.find_agency_by_id(id);
+
+        if(agency == null){
+            System.out.println("Aucune agence n'ayant cet id n'existe");
+            return previous_agency;
+        }
+        System.out.println("L'agence a bien été chargée");
+        return agency;
+    }
+
+
     public static void main(String args[]){
+        Agency_repository_in_memory memory = new Agency_repository_in_memory();
+        Agency agency = create_agency(memory);
         help();
-        Agency agency = new Agency();
+        
         while(true){
             System.out.print("\n-> ");
             String choice = IO.saisieChaine();
 
             switch(choice){
                 case "0" : System.exit(0);
-                case "1" : enter_client(agency); break;
-                case "2" : enter_flight(agency); break;
-                case "3" : enter_hotel(agency); break;
-                case "4" : enter_car(agency); break;
+                case "1" : show_clients(agency); break;
+                case "2" : show_flights(agency); break;
+                case "3" : show_hotels(agency); break;
+                case "4" : show_cars(agency); break;
                 case "5" : create_travel_project(agency); break;
                 case "6" : display_travel_project(agency); break;
                 case "7" : change_flight_ticket(agency); break;
                 case "8" : change_prestation(agency); break;
 
+                case "10" : agency = create_agency(memory); break;
+                case "11" : save_agency(memory, agency); break;
+                case "12" : agency = load_agency(memory, agency); break;
                 default : help();
             }
         }

@@ -21,7 +21,28 @@ public class Agency{
 
         this.travel_projects = new HashSet<Travel_project>();
     }
+    // Get
+    public Set<Client> get_clients(){
+        return clients;
+    }
 
+    public Set<Flight> get_flights(){
+        return flights;
+    }
+
+    public Set<Rental> get_hotels(){
+        return hotels;
+    }
+
+    public Set<Rental> get_cars(){
+        return cars;
+    }
+
+    public ID get_id(){
+        return id;
+    }
+
+    
     // Search
     public Client get_client_by_name(String name){
         Iterator<Client> it = this.clients.iterator();
