@@ -8,14 +8,13 @@ import java.util.*;
 public class Application {
     public static void help(){
         System.out.println("0 : exit");
-        System.out.println("1 : afficher la liste des clients");
+        System.out.println("1 : afficher vos projets de voyage");
         System.out.println("2 : afficher  la liste des vols");
         System.out.println("3 : afficher  la liste des hotels");
         System.out.println("4 : afficher  la liste des voitures");
         System.out.println("5 : créer un projet de voyage");
-        System.out.println("6 : afficher un projet de voyage");
-        System.out.println("7 : changer les vols d'un projet de voyage");
-        System.out.println("8 : changer les services d'un projet de voyage");
+        System.out.println("6 : changer les vols d'un projet de voyage");
+        System.out.println("7 : changer les services d'un projet de voyage");
         System.out.println();
         System.out.println("10 : créer une nouvelle agence");
         System.out.println("11 : sauvegarder l'agence en mémoire");
@@ -24,12 +23,47 @@ public class Application {
     }
 
     // 1
-    public static void show_clients(Agency agency){
-        Iterator<Client> itc = agency.get_clients().iterator();
-        while(itc.hasNext()){
-            System.out.println(" - "+itc.next().get_name());
+    public static void display_travel_projects(Agency agency){
+        Iterator<Travel_project> itt = agency.get_travel_projects().iterator();
+        while(itt.hasNext()){
+            System.out.println();
+            display_travel_project(itt.next());
+        }
+    }
+
+    public static void display_travel_project(Travel_project travel_project){
+        if(travel_project == null){
+            System.out.println("Ce projet de voyage n'existe pas");
+            return;
         }
 
+        System.out.println("ID : " + travel_project.get_id().get_id());
+        System.out.println("Client : " + travel_project.get_client().get_name());
+        System.out.println("Vols : ");
+        Iterator<Flight_ticket> itf =  travel_project.get_flight_tickets().iterator();
+        while(itf.hasNext()){
+            Flight_ticket flight_ticket = itf.next();
+            Flight flight = flight_ticket.get_flight();
+            System.out.print(" - Ticket ");
+            if(flight_ticket.get_is_first_class()){
+                System.out.print("première classe ");
+            }
+            if(flight_ticket.get_is_discounted()){
+                System.out.print("réduit ");
+            }
+            System.out.println(". " + flight.get_departure() + "=>" + flight.get_destination() + ". ("+ flight.get_date() + ", " + flight_ticket.get_price() + "€‎)");
+        }
+
+        Iterator<Prestation> itp =  travel_project.get_prestations().iterator();
+        while(itp.hasNext()){
+            Prestation prestation = itp.next();
+            System.out.print(" - Hotel : "+ prestation.get_hotel().get_name());
+            if(prestation.get_has_luxurious_prestation()){
+                System.out.print(" (luxurious)");
+            }
+            System.out.print(". Car : "+prestation.get_car().get_name());
+            System.out.print(". (" + prestation.get_price() + "€‎)");
+        }
     }
 
     // 2
@@ -76,7 +110,6 @@ public class Application {
 
         Flight flight = agency.search_flight(date, departure, destination);
         if(flight == null){
-            System.out.println("Ce vol n'existe pas, veuillez recommencer");
             return false;
         }
         // create flight ticket
@@ -108,42 +141,36 @@ public class Application {
 
         Prestation prestation = agency.add_prestation(travel_project, hotel_name, car_name, luxurious.equals("1"));
         if(prestation == null){
-            System.out.println("L'hotel et/ou la voiture n'existent pas, veuillez recommencer");
+            
             return false;
         }
         return true;
     }
 
-    public static void create_travel_project(Agency agency){
-        System.out.println("- Quel est le nom du client orchestrant ce projet de voyage ?");
-        System.out.print("-> ");
-        String name = IO.saisieChaine();
-        Travel_project travel_project = agency.create_travel_project(name);
-        if(travel_project == null){
-            System.out.println("Ce client n'existe pas, veuillez recommencer");
-            return;
-        }
+    public static void create_travel_project(Agency agency, String client_name){
+        Travel_project travel_project = agency.create_travel_project(client_name);
 
         System.out.println("- Combien de vols voulez vous commander ?");
+        System.out.print("-> ");
         int nb_flights = IO.saisieEntier();
         for(int i = 0; i < nb_flights; i++){
-            if(!create_flight_ticket(agency, travel_project)){
-                return;
+            while(!create_flight_ticket(agency, travel_project)){
+                System.out.println("Ce vol n'existe pas, veuillez recommencer");
             }
         }
 
         System.out.println("- Quel service voulez vous réserver ? Simple (0), Standard (1), ou Luxueux (2)?");
         int nb_services = Math.max(0, Math.min(2,IO.saisieEntier()));
         for(int i = 0; i < nb_services; i++){
-            if(!create_prestation(agency, travel_project)){
-                return;
+            while(!create_prestation(agency, travel_project)){
+                System.out.println("L'hotel et/ou la voiture n'existent pas, veuillez recommencer");
             }
         }
         System.out.println("L'ID de votre projet de voyage est : "+travel_project.get_id().get_id()+" . Veuillez le retenir");
         System.out.println("Ce voyage coutera : "+Double.toString(travel_project.get_price()));
     }
 
-    // 6
+    //6
     public static Travel_project search_travel_project(Agency agency){
         System.out.println("Quel est l'id de votre projet de voyage ?");
         System.out.print("-> ");
@@ -151,43 +178,6 @@ public class Application {
         return agency.get_travel_project_by_id(id);
     }
 
-    public static void display_travel_project(Agency agency){
-        Travel_project travel_project = search_travel_project(agency);
-        if(travel_project == null){
-            System.out.println("Ce projet de voyage n'existe pas");
-            return;
-        }
-
-        System.out.println("ID : " + travel_project.get_id().get_id());
-        System.out.println("Client : " + travel_project.get_client().get_name());
-        System.out.println("Vols : ");
-        Iterator<Flight_ticket> itf =  travel_project.get_flight_tickets().iterator();
-        while(itf.hasNext()){
-            Flight_ticket flight_ticket = itf.next();
-            Flight flight = flight_ticket.get_flight();
-            System.out.print(" - Ticket ");
-            if(flight_ticket.get_is_first_class()){
-                System.out.print("première classe ");
-            }
-            if(flight_ticket.get_is_discounted()){
-                System.out.print("réduit ");
-            }
-            System.out.println(". " + flight.get_departure() + "=>" + flight.get_destination() + ". ("+ flight.get_date() + ", " + flight_ticket.get_price() + "€‎)");
-        }
-
-        Iterator<Prestation> itp =  travel_project.get_prestations().iterator();
-        while(itp.hasNext()){
-            Prestation prestation = itp.next();
-            System.out.print(" - Hotel : "+ prestation.get_hotel().get_name());
-            if(prestation.get_has_luxurious_prestation()){
-                System.out.print(" (luxurious)");
-            }
-            System.out.print(". Car : "+prestation.get_car().get_name());
-            System.out.print(". (" + prestation.get_price() + "€‎)");
-        }
-    }
-
-    //7
     public static void change_flight_ticket(Agency agency){
         Travel_project travel_project = search_travel_project(agency);
         if(travel_project == null){
@@ -209,7 +199,7 @@ public class Application {
         }
     }
 
-    //8
+    //7
     public static void change_prestation(Agency agency){
         Travel_project travel_project = search_travel_project(agency);
         if(travel_project == null){
@@ -265,6 +255,7 @@ public class Application {
     public static void main(String args[]){
         Agency_repository_in_memory memory = new Agency_repository_in_memory();
         Agency agency = create_agency(memory);
+        String client_name = "Nicolas";
         help();
         
         while(true){
@@ -273,14 +264,13 @@ public class Application {
 
             switch(choice){
                 case "0" : System.exit(0);
-                case "1" : show_clients(agency); break;
+                case "1" : display_travel_projects(agency); break;
                 case "2" : show_flights(agency); break;
                 case "3" : show_hotels(agency); break;
                 case "4" : show_cars(agency); break;
-                case "5" : create_travel_project(agency); break;
-                case "6" : display_travel_project(agency); break;
-                case "7" : change_flight_ticket(agency); break;
-                case "8" : change_prestation(agency); break;
+                case "5" : create_travel_project(agency, client_name); break;
+                case "6" : change_flight_ticket(agency); break;
+                case "7" : change_prestation(agency); break;
 
                 case "10" : agency = create_agency(memory); break;
                 case "11" : save_agency(memory, agency); break;

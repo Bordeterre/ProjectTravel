@@ -22,6 +22,10 @@ public class Agency{
         this.travel_projects = new HashSet<Travel_project>();
     }
     // Get
+    public Set<Travel_project> get_travel_projects(){
+        return travel_projects;
+    }
+
     public Set<Client> get_clients(){
         return clients;
     }
