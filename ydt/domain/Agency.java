@@ -5,54 +5,51 @@ import java.util.*;
 //Agreggate
 public class Agency{
     private ID id;
-    private ArrayList<Travel_project> travel_projects;
-    private ArrayList<Client> clients;
-    private ArrayList<Hotel> hotels;
-    private ArrayList<Car> cars;
-    private ArrayList<Flight> flights;
+    private Set<Client> clients;
+    private Set<Rental> hotels;
+    private Set<Rental> cars;
+    private Set<Flight> flights;
+
+    private Set<Travel_project> travel_projects;
 
     public Agency(){
         this.id = new ID();
-        this.clients = new ArrayList<Client>();
-        this.hotels = new ArrayList<Hotel>();
-        this.cars = new ArrayList<Car>();
-        this.flights = new ArrayList<Flight>();
-        this.travel_projects = new ArrayList<Travel_project>();
+        this.clients = new HashSet<Client>();
+        this.hotels = new HashSet<Rental>();
+        this.cars = new HashSet<Rental>();
+        this.flights = new HashSet<Flight>();
+
+        this.travel_projects = new HashSet<Travel_project>();
+    }
+    // Get
+    public Set<Travel_project> get_travel_projects(){
+        return travel_projects;
     }
 
-    // Creation
-    public void create_client(String name){
-        this.clients.add(new Client(name, new ID()));
+    public Set<Client> get_clients(){
+        return clients;
     }
 
-    public void create_hotel(String name, int price){
-        this.hotels.add(new Hotel(name, price, new ID()));
+    public Set<Flight> get_flights(){
+        return flights;
     }
 
-    public void create_car(String name, int price){
-        this.cars.add(new Car(name, price, new ID()));
+    public Set<Rental> get_hotels(){
+        return hotels;
     }
 
-    public void create_flight(String date, String departure, String destination, int price){
-        this.flights.add(new Flight(date, departure, destination, price, new ID()));
+    public Set<Rental> get_cars(){
+        return cars;
     }
 
-    public void create_travel_project(Client client){
-        this.travel_projects.add(new Travel_project(client, new ID()));
+    public ID get_id(){
+        return id;
     }
 
-
-    // Modification
-    public void add_flight_ticket_to_travel_project(Travel_project travel_project, Flight flight, boolean is_discounted, boolean is_first_class){
-        Flight_ticket flight_ticket = new Flight_ticket(flight, is_discounted, is_first_class, new ID());
-        travel_project.add_flight_ticket(flight_ticket);
-
-    }
-
-
-    // Cherche
-    public Client search_client_by_name(String name){
-        ListIterator<Client> it = clients.listIterator();
+    
+    // Search
+    public Client get_client_by_name(String name){
+        Iterator<Client> it = this.clients.iterator();
         while(it.hasNext()){
             Client client = it.next();
             if(name.equals(client.get_name())){
@@ -62,15 +59,90 @@ public class Agency{
         return null;
     }
 
-
-
-    //Get
-    public ArrayList<Flight> get_flights(){
-        return flights;
+    public Flight search_flight(String date, String departure, String destination){
+        Iterator<Flight> it = this.flights.iterator();
+        while(it.hasNext()){
+            Flight flight = it.next();
+            if((date == null || date.equals(flight.get_date()))
+                && (departure == null || departure.equals(flight.get_departure()))
+                && (destination == null || destination.equals(flight.get_destination()))
+            ){
+                return flight;
+            }
+        }
+        return null;
     }
 
-    public ArrayList<Travel_project> get_travel_projects(){
-        return travel_projects;
+    public Rental search_rental(Set<Rental> rental_set, String name){
+        Iterator<Rental> it = rental_set.iterator();
+        while(it.hasNext()){
+            Rental rental = it.next();
+            if(rental.get_name().equals(name)){
+                return rental;
+            }
+        }
+        return null;
+    }
+
+    public Travel_project get_travel_project_by_id(String id){
+        Iterator<Travel_project> it = this.travel_projects.iterator();
+        while(it.hasNext()){
+            Travel_project travel_project = it.next();
+            if(id.equals(travel_project.get_id().get_id())){
+                return travel_project;
+            }
+        }
+        return null;
+    }
+
+    // Creation
+    public boolean enter_client(String name){
+        return this.clients.add(new Client(name));
+    }
+
+    public boolean enter_flight(String date, String departure, String destination, int price){
+        return this.flights.add(new Flight(date, departure, destination, price));
+    }
+
+    public boolean enter_hotel(String name, int price){
+        return this.hotels.add(new Rental(name, price));
+    }
+
+    public boolean enter_car(String name, int price){
+        return this.cars.add(new Rental(name, price));
+    }
+
+    public Travel_project create_travel_project(String name){
+        Client client = this.get_client_by_name(name);
+        if(client == null){ return null;}
+
+        Travel_project travel_project = new Travel_project(client, new ID());
+        this.travel_projects.add(travel_project);  
+        return travel_project;
+    }
+
+    public void add_flight_ticket(Travel_project travel_project, Flight flight, boolean is_discounted, boolean is_first_class){
+        Flight_ticket flight_ticket = new Flight_ticket(flight, is_discounted, is_first_class);
+        travel_project.add_flight_ticket(flight_ticket);
+    }
+
+    public Prestation add_prestation(Travel_project travel_project, String hotel_name, String car_name, boolean has_luxurious_prestation){
+        Rental hotel = this.search_rental(this.hotels, hotel_name);
+        if(hotel == null){return null;}
+        Rental car = this.search_rental(this.cars, car_name);
+        if(car == null){return null;}
+        Prestation prestation = new Prestation(car, hotel, has_luxurious_prestation);
+
+        travel_project.add_prestation(prestation);
+        return prestation;
+    }
+
+    public void remove_all_flight_tickets(Travel_project travel_project){
+        travel_project.remove_all_flight_tickets();
+    }
+
+    public void remove_all_prestations(Travel_project travel_project){
+        travel_project.remove_all_prestations();
     }
 
 }

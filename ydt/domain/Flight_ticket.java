@@ -2,14 +2,12 @@ package ydt.domain;
 
 // Value Object
 public class Flight_ticket{
-    private ID id;
     private Flight flight;
     private boolean is_discounted;
     private boolean is_first_class;
 
     // Constructor
-    public Flight_ticket(Flight flight, boolean is_discounted, boolean is_first_class, ID id){
-        this.id = id;
+    public Flight_ticket(Flight flight, boolean is_discounted, boolean is_first_class){
         this.flight = flight;
         this.is_discounted = is_discounted;
         this.is_first_class = is_first_class;
@@ -39,16 +37,19 @@ public class Flight_ticket{
         return is_first_class;
     }
 
-    public ID get_id(){
-        return id;
-    }
     
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Flight_ticket)) {
             return false;
         }
-        Flight_ticket p = (Flight_ticket) o;
-        return get_id().equals(p.get_id());
+        Flight_ticket f = (Flight_ticket) o;
+        if(this.get_flight().equals(f.get_flight()) 
+            && this.get_is_discounted() == f.get_is_discounted()
+            && this.get_is_first_class() == f.get_is_first_class()
+        ){
+            return true;
+        }
+        return false;
     }  
 }

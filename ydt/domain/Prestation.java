@@ -3,12 +3,12 @@ package ydt.domain;
 // Entity
 public class Prestation{
     private ID id;
-    private Car car;
-    private Hotel hotel;
+    private Rental car;
+    private Rental hotel;
     private boolean has_luxurious_prestation;
 
     // Constructor
-    public Prestation(Car car, Hotel hotel, boolean has_luxurious_prestation){
+    public Prestation(Rental car, Rental hotel, boolean has_luxurious_prestation){
         this.id = new ID();
         this.car = car;
         this.hotel = hotel;
@@ -16,11 +16,11 @@ public class Prestation{
     }
 
     // Setter
-    public void assign_car(Car car){
+    public void assign_car(Rental car){
         this.car = car;
     }
 
-    public void assign_hotel(Hotel hotel, boolean has_luxurious_prestation){
+    public void assign_hotel(Rental hotel, boolean has_luxurious_prestation){
         this.hotel = hotel;
         this.has_luxurious_prestation = has_luxurious_prestation;
     }
@@ -36,11 +36,11 @@ public class Prestation{
         return price;
     }
 
-    public Car get_car(){
+    public Rental get_car(){
         return car;
     }
 
-    public Hotel get_hotel(){
+    public Rental get_hotel(){
         return hotel;
     }
 

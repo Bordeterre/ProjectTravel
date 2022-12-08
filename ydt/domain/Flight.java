@@ -2,18 +2,16 @@ package ydt.domain;
 
 // Value Object
 public class Flight{
-    private ID id;
     private int price;
     private String date;
     private String departure;
     private String destination;
 
-    public Flight(String date, String departure, String destination, int price, ID id){
+    public Flight(String date, String departure, String destination, int price){
         this.date = date;
         this.departure = departure;
         this.destination = destination;
         this.price = price;
-        this.id = id;
     }
 
     public String get_date(){
@@ -32,17 +30,24 @@ public class Flight{
         return this.price;
     }
 
-    public ID get_id(){
-        return this.id;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Flight)) {
             return false;
         }
-        Flight p = (Flight) o;
-        return get_id().equals(p.get_id());
-    }  
+        Flight f = (Flight) o;
+        if(this.get_date().equals(f.get_date()) 
+            && this.get_departure().equals(f.get_departure()) 
+            && this.get_destination().equals(f.get_destination())
+            && this.get_price() == f.get_price()
+        ){
+            return true;
+        }
+        return false;
+    } 
+
+    public int hashCode() {
+        return (get_date() + get_departure() + get_destination() + Integer.toString(get_price())).hashCode();
+    }
 
 }
