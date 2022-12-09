@@ -1,5 +1,4 @@
-package ydt.application;
-import ydt.domain.*;
+package ydt.domain;
 
 public class Data_fetcher {
     public static void fetch_data(Agency agency){
